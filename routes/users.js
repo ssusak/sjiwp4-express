@@ -2,6 +2,8 @@ var express = require('express');
 var router = express.Router();
 const Joi = require("joi");
 
+const { db } = require("../services/db.js");
+
 router.get('/signin', function(req, res, next) {
   res.render('users/signin', { result : null });
 });
@@ -20,6 +22,8 @@ router.post('/signin', function(req, res, next) {
   }
   const email = req.body.email;
   const password = req.body.password;
+
+const stmt = db.prepare("SELECT * FROM users WHERE email = ? AND password = ?");
   
 let signinResult = false;
   if (email === "test@test.com" && password === "123") {
@@ -28,9 +32,6 @@ let signinResult = false;
   } else {
     res.render("users/signin", { result: signinResult })
   }
-
-  // TODO: provjera podataka u bazi i vraćanje rezultata
-
 });
 
 module.exports = router;
