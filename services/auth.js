@@ -54,8 +54,7 @@ function checkEmailUnique(email) {
 
     if (result["count(*)"] >= 1) {
         return false;
-    }
-    else {
+    } else {
         return true;
     }
 }

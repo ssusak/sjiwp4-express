@@ -13,16 +13,16 @@
             <label>Zaporka</label>
             <input type="password" name="password" class="bg-neutral" />
         </div>
-        {{> form_buttons}}
+        {{> form_buttons }}
     </form>
     {{/if}}
 
     {{#if result.validation_error}}
-    {{> validation_error}}
+    {{> validation_error }}
     {{/if}}
 
     {{#if result.database_error}}
-    {{> database_error}}
+    {{> database_error }}
     {{/if}}
 
     {{#if result.email_in_use}}
@@ -37,9 +37,7 @@
                 <p>
                     Uspješno ste promijenili podatke, sada ćemo vas odjaviti!
                 </p>
-                <div class="card-actions justify-end">
-                    <a class="btn" href="/users/signin">Nastavi na prijavu</a>
-                </div>
+                <div class="card-actions justify-end"></div>
             </div>
         </div>
         <script>
