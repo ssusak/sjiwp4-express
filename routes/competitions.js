@@ -59,6 +59,33 @@ router.get("/edit/:id", adminRequired, function (req, res, next) {
     res.render("competitions/form", { result: { display_form: true, edit: selectResult } });
 });
 
+// SCHEMA apply
+const schema_apply = Joi.object({
+    id: Joi.number().integer().positive().required(),
+    id_users: Joi.number().integer().positive().required(),
+    id_competitions: Joi.number().integer().positive().required(),
+    score: Joi.number().integer().positive().required(),
+    applied_at: Joi.date().iso().required()
+});
+
+// GET /competitions/apply/:id
+router.post("/apply/:id", function (req, res, next) {
+    // do validation
+    const result = schema_apply.validate(req.body);
+    if (result.error) {
+        throw new Error("Neispravan poziv");
+    }
+
+    const stmt = db.prepare("INSERT INTO competitors(id_users, id_competitions) VALUES (?, ?);");
+    const insertResult = stmt.run(req.user.sub, req.user.sub);
+
+    if (insertResult.changes && insertResult.changes === 1) {
+        res.render("competitions/form", { result: { success: true } });
+    } else {
+        res.render("competitions/form", { result: { database_error: true } });
+    }
+});
+
 // SCHEMA edit
 const schema_edit = Joi.object({
     id: Joi.number().integer().positive().required(),
