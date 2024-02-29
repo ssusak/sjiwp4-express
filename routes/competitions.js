@@ -69,15 +69,15 @@ const schema_apply = Joi.object({
 });
 
 // GET /competitions/apply/:id
-router.post("/apply/:id", function (req, res, next) {
+router.get("/apply/:id", function (req, res, next) {
     // do validation
-    const result = schema_apply.validate(req.body);
+    const result = schema_id.validate(req.body);
     if (result.error) {
         throw new Error("Neispravan poziv");
     }
 
-    const stmt = db.prepare("INSERT INTO competitors(id_users, id_competitions) VALUES (?, ?);");
-    const insertResult = stmt.run(req.user.sub, req.user.sub);
+    const stmt = db.prepare("INSERT INTO competitors (id_users, id_competitions) VALUES (?, ?);");
+    const insertResult = stmt.run(req.user.sub, req.params.id);
 
     if (insertResult.changes && insertResult.changes === 1) {
         res.render("competitions/form", { result: { success: true } });
