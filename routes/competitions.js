@@ -61,30 +61,50 @@ router.get("/edit/:id", adminRequired, function (req, res, next) {
 
 // SCHEMA apply
 const schema_apply = Joi.object({
-    id: Joi.number().integer().positive().required(),
     id_users: Joi.number().integer().positive().required(),
     id_competitions: Joi.number().integer().positive().required(),
-    score: Joi.number().integer().positive().required(),
     applied_at: Joi.date().iso().required()
 });
 
-// GET /competitions/apply/:id
 router.get("/apply/:id", function (req, res, next) {
     // do validation
-    const result = schema_id.validate(req.body);
+    const result = schema_id.validate(req.params);
     if (result.error) {
         throw new Error("Neispravan poziv");
     }
 
-    const stmt = db.prepare("INSERT INTO competitors (id_users, id_competitions) VALUES (?, ?);");
-    const insertResult = stmt.run(req.user.sub, req.params.id);
+    const stmt = db.prepare("SELECT * FROM competitors WHERE id = ?;");
+    const selectResult = stmt.get(req.params.id);
+
+    if (!selectResult) {
+        throw new Error("Neispravan poziv");
+    }
+
+    res.render("competitions/form", { result: { display_form: true, edit: selectResult } });
+});
+
+console.log()
+
+
+// GET /competitions/apply/:id
+router.get("/apply/:id", function (req, res, next) {
+    // do validation
+    const result = schema_apply.validate(req.body);
+    if (result.error) {
+        throw new Error("Neispravan poziv");
+    }
+
+    const stmt = db.prepare("INSERT INTO competitors (id_users, id_competitions, applied_at) VALUES (?, ?, ?);");
+    const insertResult = stmt.run(req.user.sub, req.params.id, req.body.applied_at);
 
     if (insertResult.changes && insertResult.changes === 1) {
-        res.render("competitions/form", { result: { success: true } });
+        res.render("competitions/apply");
     } else {
         res.render("competitions/form", { result: { database_error: true } });
     }
 });
+
+console.log()
 
 // SCHEMA edit
 const schema_edit = Joi.object({
