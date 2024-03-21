@@ -34,10 +34,11 @@
                     <td>{{this.author}}</td>
                     <td class="flex flex-wrap gap-2">
                         {{#if ../user.is_admin}}
+                        <a href="/competitions/applied/{{this.id}}" class="btn btn-secondary btn-xs">Prijavljeni</a>
                         <a href="/competitions/edit/{{this.id}}" class="btn btn-accent btn-xs">Uredi</a>
                         <a href="/competitions/delete/{{this.id}}" class="btn btn-error btn-xs">Briši</a>
                         {{/if}}
-                        <a href="/competitions/apply/{{this.id}}" class="btn btn-success btn-xs">Prijavi</a>
+                        <a href="/competitions/apply/{{this.id}}" class="btn btn-primary btn-xs">Prijava</a>
                     </td>
                 </tr>
                 {{/each}}
