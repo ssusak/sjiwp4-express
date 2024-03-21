@@ -39,6 +39,22 @@ router.get("/delete/:id", adminRequired, function (req, res, next) {
     res.redirect("/competitions");
 });
 
+// GET /competitions/delete/:id
+router.get("/deleted/:id", adminRequired, function (req, res, next) {
+    // do validation
+    const result = schema_id.validate(req.params);
+    if (result.error) {
+        throw new Error("Neispravan poziv");
+    }
+    const stmt = db.prepare("DELETE FROM competitors WHERE id = ?;");
+    const deleteResult = stmt.run(req.params.id);
+
+    if (!deleteResult.changes || deleteResult.changes !== 1) {
+        throw new Error("Operacija nije uspjela");
+    }
+    res.redirect("/competitions");
+});
+
 // GET /competitions/edit/:id
 router.get("/edit/:id", adminRequired, function (req, res, next) {
     // do validation
@@ -149,7 +165,7 @@ router.get("/applied/:id", adminRequired, function (req, res, next) {
     }
 
     const stmt = db.prepare(`
-    SELECT a.id, c.name, u.name as korisnik, a.bodovi
+    SELECT a.id as id, c.name, u.name as korisnik, a.bodovi
     FROM competitors a, competitions c, users u
     WHERE a.id_competitions = c.id and a.id_users = u.id and c.id = ?
     ORDER BY a.bodovi
@@ -178,10 +194,11 @@ router.get("/bodovi/:id", adminRequired, function (req, res, next) {
 
     res.render("competitions/bodovi", { result: { display_form: true, bodovi: selectResult } });
 });
+
 // SCHEMA bodovi
 const schema_bodovi = Joi.object({
     id: Joi.number().integer().positive().required(),
-    bodovi: Joi.number().min(1).max(50).required()
+    bodovi: Joi.number().min(0).max(50).required()
 });
 
 
@@ -189,16 +206,14 @@ const schema_bodovi = Joi.object({
 router.post("/bodovi", adminRequired, function (req, res, next) {
     // do validation
     const result = schema_bodovi.validate(req.body);
-    console.log(result);
     if (result.error) {
         throw new Error("Neispravan poziv");
     }
 
     const stmt = db.prepare("UPDATE competitors SET bodovi = ? WHERE id = ?");
     const insertResult = stmt.run(req.body.bodovi, req.body.id);
-
     if (insertResult.changes && insertResult.changes === 1) {
-        res.redirect("/competitions/applied" + req.body.id);
+        res.redirect("/competitions");
     } else {
         res.render("competitions/apply", { result: { database_error: true } });
     }

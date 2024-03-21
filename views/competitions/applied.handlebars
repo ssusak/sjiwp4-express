@@ -14,14 +14,14 @@
 
                 {{#each result.items}}
                 <tr>
-                    <th>{{this.id}}</th>
-                    <th>{{this.korisnik}}</th>
-                    <td>{{this.user}}</td>
+                    <td>{{this.id}}</td>
+                    <td>{{this.korisnik}}</td>
                     <td>{{this.name}}</td>
                     <td>{{this.bodovi}}</td>
                     <td class="flex flex-wrap gap-2">
                         {{#if ../user.is_admin}}
                         <a href="/competitions/bodovi/{{this.id}}" class="btn btn-secondary btn-xs">Upiši bodove</a>
+                         <a href="/competitions/deleted/{{this.id}}" class="btn btn-error btn-xs">Briši</a>
                         {{/if}}
                     </td>
                 </tr>
